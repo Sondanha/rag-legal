@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.log
+*.sqlite3
+
+# Byte-compiled / optimized / DLL files
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.egg
+*.egg-info/
+
+# Virtual environment
+.venv/
+env/
+ENV/
+venv/
+pip-wheel-metadata/
+build/
+dist/
+
+# VSCode
+.vscode/
+
+# Pytest, coverage
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+
+# Environment variables
+.env
+.env.*
+
+# Local DB or data
+db.sqlite3
+db/
+*.db
+*.db-journal
+
+# Qdrant local storage (if used)
+qdrant_storage/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / IDE junk
+.DS_Store
+Thumbs.db
+
+# Debug / temp files
+*.bak
+*.tmp
+*.swp
+*.idea/
+*.orig
+
+# Law crawler debug output
+debug_page_*.xml
+
+*.notUsed/
