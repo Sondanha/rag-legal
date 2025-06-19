@@ -1,10 +1,11 @@
-name: rag-legal-app
 app:
-  env:
-    - name: QDRANT_URL
-    - name: QDRANT_API_KEY
-    - name: GOOGLE_API_KEY
-    - name: EMBEDDING_MODEL_NAME
+  start: uvicorn main:app --host 0.0.0.0 --port 8001
   ports: 8000
-  start: uvicorn main:app --host 0.0.0.0 --port 8000
-  build: pip install --upgrade pip && pip install -r requirements.txt
+  env:
+    - name: EMBEDDING_SERVER_URL
+      value: https://dana5314777-embedding-server.hf.space
+  healthcheck:
+    path: /healthz
+    interval: 10s
+    timeout: 2s
+    retries: 3
