@@ -5,8 +5,16 @@ from langchain_core.runnables import RunnableLambda
 BASE_URL = "https://www.law.go.kr"
 
 def parse_llm_response(raw: str) -> Dict[str, Any]:
+    
+    print("=== RAW RESPONSE START ===")
+    print(raw)
+    print("=== RAW RESPONSE END ===")
+    
     sections = re.split(r'\n(?=\d\. \*\*.+?\*\*)', raw.strip())
+    print("=== PARSED SECTIONS ===")
+    print(sections)
     result = {"answer": "", "referenced_laws": []}
+
 
     for section in sections:
         match = re.match(r'^(\d+)\. \*\*(.+?)\*\*\n', section)
