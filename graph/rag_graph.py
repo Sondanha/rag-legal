@@ -5,6 +5,7 @@ from graph.nodes.retrieve_law_node import retrieve_law_runnable
 from graph.nodes.retrieve_number_node import retrieve_number_runnable
 from graph.nodes.final_prompt_node import final_prompt_runnable
 from graph.nodes.llm_node import call_llm_node_runnable
+from graph.nodes.postprocess_node import postprocess_reference_documents_runnable
 
 from typing import TypedDict, List
 
@@ -28,6 +29,7 @@ def build_rag_graph():
     builder.add_node("retrieve_number", retrieve_number_runnable)
     builder.add_node("final_prompt", final_prompt_runnable)
     builder.add_node("call_llm", call_llm_node_runnable)
+    builder.add_node("postprocess", postprocess_reference_documents_runnable)
 
     builder.set_entry_point("embed")
     builder.add_edge("embed", "retrieve_ordin")
@@ -35,6 +37,7 @@ def build_rag_graph():
     builder.add_edge("retrieve_law", "retrieve_number")  
     builder.add_edge("retrieve_number", "final_prompt") 
     builder.add_edge("final_prompt", "call_llm")
-    builder.set_finish_point("call_llm")
+    builder.add_edge("call_llm", "postprocess")
+    builder.set_finish_point("postprocess") 
 
     return builder.compile()

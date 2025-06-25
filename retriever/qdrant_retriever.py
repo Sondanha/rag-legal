@@ -26,25 +26,6 @@ def search_qdrant(collection_name: str, query_vector: List[float], top_k: int = 
         limit=top_k,
         with_payload=True
     )
-
-    # 디버깅용 로그 (사용자에게는 노출되지 않음)
-    # print(f"\n🔎 [Debug] Top {top_k} results from '{collection_name}':")
-    # for i, hit in enumerate(results):
-    #     payload = hit.payload
-    #     title = payload.get("title", "제목 없음")
-    #     doc_id = payload.get("id", "ID 없음")
-    #     score = hit.score
-
-    #     if collection_name == LAW_COLLECTION:
-    #         identifier = f"{payload.get('law_group')} / {payload.get('number')}조 {payload.get('title') or ''}"
-    #     elif collection_name == ORDIN_COLLECTION:
-    #         identifier = f"{payload.get('law_title')} / {payload.get('article_number')} {payload.get('article_title') or ''}"
-    #     elif collection_name == NUMBER_COLLECTION:
-    #         identifier = f"{payload.get('부서명')} / {payload.get('이름')} - {payload.get('업무내용')[:30]}..."
-    #     else:
-    #         identifier = title
-
-    #     print(f"  {i+1}. {identifier.strip()} (score = {score:.4f})")
         
     return [hit.payload for hit in results]
 

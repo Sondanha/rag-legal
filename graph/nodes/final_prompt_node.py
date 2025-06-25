@@ -26,12 +26,13 @@ def build_final_prompt(state: dict) -> dict:
     - "문서를 참고하세요", "문서에 명시되어 있지 않습니다" 같은 표현은 피하고, 주어진 문서에서 유의미한 정보를 직접 찾아 답변에 녹여내야 합니다.
     - "다른 법률을 참고하세요" 같은 일반적인 권고는 삼가고, 지금 제공된 조례나 법령 등의 문서 안에서 실질적인 도움을 줄 수 있는 내용을 우선적으로 전달하십시오.
     - 질문자의 상황에 직접적으로 도움이 되는 핵심 내용을 요점부터 설명하고, 필요시 간단한 예시나 상황을 들어 설명해 주세요.
-    - 관련 문서가 존재하는 경우 PDF 링크를 무조건 삽입하시오.
-    - 답변은 반드시 다음 3가지 항목으로 나눠서 작성하십시오:
-        1. answer (일반인을 위한 자연어 응답)
-        2. referenced_laws (참고한 조문 제목/번호 목록, 없으면 빈 배열)
-        3. reference_documents (PDF 문서 제목/링크 목록, 없으면 빈 배열)
-    """)
+    - 답변은 반드시 다음 2가지 항목으로 다음 형식을 반드시 지켜 출력하십시오:
+    1. **answer**
+        <자연어 응답>
+    2. **referenced_laws**
+    * 법 이름 조항
+    * ...
+                          """)
 
     # 조례
     ordin_context = "\n\n".join([doc.get("text", "") for doc in state.get("ordin_docs", [])])
@@ -43,8 +44,6 @@ def build_final_prompt(state: dict) -> dict:
         law_name = LAW_CODE_TO_NAME.get(raw_code, raw_code)
 
         summary = f"{law_name} {doc.get('number', '')}조 {doc.get('title', '')}\n{doc.get('text', '')}"
-        if doc.get("table_pdf"):
-            summary += f"\n📄 관련 문서 보기: {doc['table_pdf']}"
         law_context_list.append(summary)
     law_context = "\n\n".join(law_context_list)
 
