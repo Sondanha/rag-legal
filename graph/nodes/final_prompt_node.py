@@ -31,16 +31,23 @@ def build_final_prompt(state: dict) -> dict:
         - `<strong>` 또는 `<span style="font-weight:600">` 으로 강조
         - `<h3>`로 소제목 처리
         - 줄바꿈은 `<br>` 대신 문단 구분으로 표현
+        - 절대 코드 블록(```html`, ``` 등)을 사용하지 마세요. 응답 전체는 순수한 HTML 형식으로 구성되어야 하며, 코드 표시 문법은 제거해야 합니다.
 
-    ❗ 마크다운(Markdown)은 절대 사용하지 마세요.
+    ❗ 다음 사항을 반드시 지키세요:
+    - 반드시 `1. **answer**`, `2. **referenced_laws**` 형식으로 각각 출력해야 합니다.
+    - answer는 순수 HTML로 작성해야 하며, 코드 블록(```)을 포함하지 마세요.
+    - referenced_laws는 HTML이 아닌 마크다운 리스트 형식으로 작성하세요 (각 줄은 `* 법령명 조항번호` 형태).
 
     ✏️ 출력 예시:
-        1. **answer**
-        <p>...</p> <p><strong>중요 사항:</strong> ...</p>
-        
-        2. **referenced_laws**
-        * 법 이름 조항
-        * ...
+
+    1. **answer**
+    <p>자영업을 시작하시는군요. ...</p>
+    <p><strong>중요 사항:</strong> 영업신고는 필수입니다.</p>
+
+    2. **referenced_laws**
+    * 식품위생법 제42조
+    * 공중위생관리법 제4조
+
 """)
 
     # 조례

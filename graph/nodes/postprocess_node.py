@@ -1,41 +1,34 @@
 import re
-from typing import Dict, Any, List
 from langchain_core.runnables import RunnableLambda
+
+from typing import Dict, Any, List
 
 BASE_URL = "https://www.law.go.kr"
 
 def parse_llm_response(raw: str) -> Dict[str, Any]:
-    
-    print("=== RAW RESPONSE START ===")
-    print(raw)
-    print("=== RAW RESPONSE END ===")
-    
-    sections = re.split(r'\n(?=\d\. \*\*.+?\*\*)', raw.strip())
-    print("=== PARSED SECTIONS ===")
-    print(sections)
-    result = {"answer": "", "referenced_laws": []}
+    """
+    LLM 응답에서 answer는 HTML, referenced_laws는 마크다운 리스트로 추출
+    """
+    # 1. answer / 2. referenced_laws 분리
+    sections = re.split(r"\n\s*2\. \*\*referenced_laws\*\*", raw.strip(), maxsplit=1)
 
+    # answer 부분 정리
+    answer_section = sections[0].strip()
+    answer_match = re.search(r"1\. \*\*answer\*\*\s*(.*)", answer_section, re.DOTALL)
+    answer_html = answer_match.group(1).strip() if answer_match else answer_section
 
-    for section in sections:
-        match = re.match(r'^(\d+)\. \*\*(.+?)\*\*\n', section)
-        if not match:
-            continue
+    # referenced_laws 부분 정리
+    referenced_laws_section = sections[1].strip() if len(sections) > 1 else ""
+    referenced_laws = [
+        line.lstrip("* ").strip()
+        for line in referenced_laws_section.splitlines()
+        if line.strip().startswith("*")
+    ]
 
-        key = match.group(2).strip().lower().replace(" ", "_")
-        content = section[match.end():].strip()
-
-        if key == "answer":
-            result["answer"] = content
-
-        elif key == "referenced_laws":
-            result["referenced_laws"] = [
-                line.lstrip("* ").strip()
-                for line in content.splitlines()
-                if line.strip()
-            ]
-
-    return result
-
+    return {
+        "answer": answer_html,
+        "referenced_laws": referenced_laws
+    }
 
 def postprocess_reference_documents(state: Any) -> Dict[str, Any]:
     if isinstance(state, str):
@@ -45,10 +38,10 @@ def postprocess_reference_documents(state: Any) -> Dict[str, Any]:
     law_docs = state.get("law_docs", [])
     ordin_docs = state.get("ordin_docs", [])
 
-    parsed = parse_llm_response(raw_response if isinstance(raw_response, str) else "")
+    parsed = parse_llm_response(raw_response)
 
     reference_documents = []
-    seen_urls = set()  # ✅ 중복 제거: URL 기준
+    seen_urls = set()
 
     for doc in law_docs + ordin_docs:
         number = doc.get("number")
@@ -61,7 +54,7 @@ def postprocess_reference_documents(state: Any) -> Dict[str, Any]:
 
         full_url = f"{BASE_URL}{pdf_path}"
         if full_url in seen_urls:
-            continue  # ✅ 이미 추가된 URL은 무시
+            continue
         seen_urls.add(full_url)
 
         if table_title:
@@ -77,8 +70,8 @@ def postprocess_reference_documents(state: Any) -> Dict[str, Any]:
     return {
         **state,
         "response": {
-            "answer": parsed["answer"],
-            "referenced_laws": parsed["referenced_laws"],
+            "answer": parsed["answer"],  # HTML string
+            "referenced_laws": parsed["referenced_laws"],  # markdown list parsed
             "reference_documents": reference_documents
         }
     }
