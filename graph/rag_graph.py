@@ -1,4 +1,6 @@
 from langgraph.graph import StateGraph
+from typing import TypedDict, List
+
 from graph.nodes.embed_node import embed_query_runnable
 from graph.nodes.retrieve_ordin_node import retrieve_ordin_runnable
 from graph.nodes.retrieve_law_node import retrieve_law_runnable
@@ -6,8 +8,6 @@ from graph.nodes.retrieve_number_node import retrieve_number_runnable
 from graph.nodes.final_prompt_node import final_prompt_runnable
 from graph.nodes.llm_node import call_llm_node_runnable
 from graph.nodes.postprocess_node import postprocess_reference_documents_runnable
-
-from typing import TypedDict, List
 
 class RAGState(TypedDict):
     query: str
@@ -38,6 +38,6 @@ def build_rag_graph():
     builder.add_edge("retrieve_number", "final_prompt") 
     builder.add_edge("final_prompt", "call_llm")
     builder.add_edge("call_llm", "postprocess")
-    builder.set_finish_point("postprocess") 
 
+    builder.set_finish_point("postprocess") 
     return builder.compile()
